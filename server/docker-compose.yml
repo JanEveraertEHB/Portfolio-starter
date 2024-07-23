@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  api:
+    build: ./images/api
+    ports:
+      - "8080:3000"
+    volumes:
+      - ./images/api/src:/usr/app/src
+    environment:
+      - POSTGRES_USER=example
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=test
+      - POSTGRES_HOST=store
+      - POSTGRES_PORT=5432
+    depends_on:
+      - store
+
+  store:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=example
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=test
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./_backup:/var/lib/postgresql/data
