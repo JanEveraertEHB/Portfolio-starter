@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 services:
   api:
     build: ./images/api
@@ -7,29 +7,37 @@ services:
     volumes:
       - ./images/api/src:/usr/app/src
     environment:
-      - POSTGRES_USER=example
-      - POSTGRES_PASSWORD=example
-      - POSTGRES_DB=test
-      - POSTGRES_HOST=store
-      - POSTGRES_PORT=5432
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: test
+      POSTGRES_HOST: store
+      POSTGRES_PORT: 5432
     depends_on:
-      - store
+      store:
+        condition: service_healthy
 
   store:
     image: postgres:latest
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=example
-      - POSTGRES_PASSWORD=example
-      - POSTGRES_DB=test
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: test
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./_backup:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U example -d test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   test:
     build: ./images/api
     command: npm test
     depends_on:
-      - api
-      - store
+      api:
+        condition: service_healthy
+      store:
+        condition: service_healthy
