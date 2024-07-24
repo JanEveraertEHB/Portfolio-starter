@@ -2,8 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
     branches:
       - main
@@ -23,7 +22,7 @@ jobs:
           POSTGRES_DB: test
           POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
-          --health-cmd "pg_isready -U example -d test"
+          --health-cmd "pg_isready -U example"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -35,7 +34,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
@@ -67,7 +66,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker containers
-        run: docker-compose build
+        run: docker-compose -f server/docker-compose.yml build
+        working-directory: server
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -75,10 +75,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Publish Docker images
-        run: docker-compose push
-
-      - name: Deploy to server
-        run: |
-          # Add your deployment commands here
-          echo "Deploying to server..."
+      - name: Push Docker images
+        run: docker-compose -f server/docker-compose.yml push
+        working-directory: server
