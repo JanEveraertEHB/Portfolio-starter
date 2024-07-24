@@ -24,13 +24,17 @@ app.get("/", async (req, res) => {
     const result = await client.query("SELECT NOW()");
     client.release();
     res.json({
-      message: "hellosSsss test",
+      message: "helleeeezzos test",
       timestamp: result.rows[0].now,
     });
   } catch (err) {
     console.error(err);
     res.send("Error " + err);
   }
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
 });
 
 app.listen(port, () => {
