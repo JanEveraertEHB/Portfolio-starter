@@ -6,6 +6,8 @@ COPY package*.json ./
 
 RUN npm install --quiet
 
+RUN npm install -g nodemon
+
 COPY ./ ./
 
 EXPOSE 3000

@@ -2,6 +2,7 @@ version: "3.8"
 services:
   api:
     build: ./images/api
+    image: x5rrt4393dd/server-api
     ports:
       - "8080:3000"
     volumes:
@@ -15,6 +16,16 @@ services:
     depends_on:
       store:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail http://localhost:3000/health || exit 1",
+        ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   store:
     image: postgres:latest
@@ -41,3 +52,10 @@ services:
         condition: service_healthy
       store:
         condition: service_healthy
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_POLL_INTERVAL: 300
