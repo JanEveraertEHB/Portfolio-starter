@@ -46,15 +46,15 @@ jobs:
         working-directory: ./server/images/api
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v4
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./server/images/api
           push: true
           tags: x5rrt4393dd/forum:latest
 
@@ -68,5 +68,5 @@ jobs:
 
       - name: Deploy to server
         run: |
-          # Add your deployment commands here
+          # Replace with your actual deployment commands
           echo "Deploying to server..."
