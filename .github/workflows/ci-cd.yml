@@ -66,8 +66,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker containers
-        run: docker-compose -f server/docker-compose.yml build
-        working-directory: server
+        run: docker-compose build
+        working-directory: ./server
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -76,5 +76,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker images
-        run: docker-compose -f server/docker-compose.yml push
-        working-directory: server
+        run: docker-compose push
+        working-directory: ./server
+
+      - name: Deploy to server
+        run: |
+          # "Deploying to server..."
