@@ -26,3 +26,10 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - ./_backup:/var/lib/postgresql/data
+
+  test:
+    build: ./images/api
+    command: npm test
+    depends_on:
+      - api
+      - store

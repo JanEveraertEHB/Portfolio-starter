@@ -24,7 +24,7 @@ app.get("/", async (req, res) => {
     const result = await client.query("SELECT NOW()");
     client.release();
     res.json({
-      message: "hellosSss test",
+      message: "hellosSsss test",
       timestamp: result.rows[0].now,
     });
   } catch (err) {
