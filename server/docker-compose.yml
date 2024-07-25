@@ -2,11 +2,12 @@ version: "3.8"
 services:
   api:
     build: ./images/api
-    image: x5rrt4393dd/server-api
+    image: x5rrt4393dd/server-api:latest
     ports:
-      - "8080:3000"
+      - 8080:3000
     volumes:
       - ./images/api/src:/usr/app/src
+      - /usr/app/node_modules
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
@@ -26,11 +27,13 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
 
   store:
     image: postgres:latest
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
@@ -44,18 +47,10 @@ services:
       timeout: 5s
       retries: 5
 
-  test:
-    build: ./images/api
-    command: npm test
-    depends_on:
-      api:
-        condition: service_healthy
-      store:
-        condition: service_healthy
-
   watchtower:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_POLL_INTERVAL: 300

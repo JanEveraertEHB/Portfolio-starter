@@ -14,10 +14,10 @@ module.exports = {
       port: process.env.POSTGRES_PORT,
     },
     migrations: {
-      directory: "./migrations",
+      directory: path.resolve(__dirname, "./migrations"),
     },
     seeds: {
-      directory: "./seeds",
+      directory: path.resolve(__dirname, "./seeds"),
     },
   },
 
