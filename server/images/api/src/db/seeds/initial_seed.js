@@ -1,80 +1,70 @@
-exports.seed = async function (knex) {
-  try {
-    console.log("Deleting existing entries...");
-    // Deletes ALL existing entries
-    await knex("Replies").del();
-    await knex("Threads").del();
-    await knex("Users").del();
+const { v4: uuidv4 } = require("uuid");
 
-    console.log("Inserting initial data into Users table...");
-    // Insert initial data into Users table
-    await knex("Users").insert([
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.seed = async function (knex) {
+  // Deletes ALL existing entries and resets primary key sequences
+  await knex.raw('TRUNCATE TABLE "Replies" RESTART IDENTITY CASCADE');
+  await knex.raw('TRUNCATE TABLE "Threads" RESTART IDENTITY CASCADE');
+  await knex.raw('TRUNCATE TABLE "Users" RESTART IDENTITY CASCADE');
+
+  // Inserts seed entries and retrieves the inserted user IDs
+  const [admin, moderator, member] = await knex("Users")
+    .insert([
       {
-        user_id: 1,
+        UUID: uuidv4(),
         username: "admin",
-        password_hash: "hashed_password1",
+        password_hash: "hashed_password",
         role: "admin",
       },
       {
-        user_id: 2,
+        UUID: uuidv4(),
         username: "moderator",
-        password_hash: "hashed_password2",
+        password_hash: "hashed_password",
         role: "moderator",
       },
       {
-        user_id: 3,
-        username: "member1",
-        password_hash: "hashed_password3",
+        UUID: uuidv4(),
+        username: "member",
+        password_hash: "hashed_password",
         role: "member",
       },
-      {
-        user_id: 4,
-        username: "member2",
-        password_hash: "hashed_password4",
-        role: "member",
-      },
-    ]);
+    ])
+    .returning(["user_id"]);
 
-    console.log("Inserting initial data into Threads table...");
-    // Insert initial data into Threads table
-    await knex("Threads").insert([
+  // Inserts seed entries for Threads using the retrieved user IDs
+  const [firstThread] = await knex("Threads")
+    .insert([
       {
-        thread_id: 1,
-        title: "Welcome to the forum",
-        content: "This is the first thread.",
-        user_id: 1,
+        title: "First Thread",
+        content: "This is the first thread",
+        user_id: admin.user_id,
         status: "open",
       },
       {
-        thread_id: 2,
-        title: "General Discussion",
-        content: "Feel free to talk about anything here.",
-        user_id: 2,
+        title: "Second Thread",
+        content: "This is the second thread",
+        user_id: moderator.user_id,
         status: "open",
       },
-    ]);
+    ])
+    .returning(["thread_id"]);
 
-    console.log("Inserting initial data into Replies table...");
-    // Insert initial data into Replies table
-    await knex("Replies").insert([
-      {
-        reply_id: 1,
-        thread_id: 1,
-        content: "Thank you for the welcome!",
-        user_id: 3,
-        status: "active",
-      },
-      {
-        reply_id: 2,
-        thread_id: 2,
-        content: "This is a great place to discuss topics.",
-        user_id: 4,
-        status: "active",
-      },
-    ]);
-
-    console.log("Seeding completed successfully.");
-  } catch (error) {
-    console.error("Error during seeding:", error);
-  }
+  // Inserts seed entries for Replies using the retrieved thread IDs and user IDs
+  await knex("Replies").insert([
+    {
+      content: "This is a reply to the first thread",
+      thread_id: firstThread.thread_id,
+      user_id: member.user_id,
+      status: "active",
+    },
+    {
+      content: "This is another reply to the first thread",
+      thread_id: firstThread.thread_id,
+      user_id: moderator.user_id,
+      status: "active",
+    },
+  ]);
 };

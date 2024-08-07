@@ -5,6 +5,7 @@
 exports.up = async function (knex) {
   const hasUsersTable = await knex.schema.hasTable("Users");
   if (!hasUsersTable) {
+    console.log("Creating Users table...");
     await knex.schema.createTable("Users", (table) => {
       table.increments("user_id").primary(); // Auto-incrementing primary key
       table.string("UUID", 36).notNullable(); // Change to string type
@@ -14,6 +15,9 @@ exports.up = async function (knex) {
       table.timestamp("last_login").nullable();
       table.timestamps(true, true);
     });
+    console.log("Users table created.");
+  } else {
+    console.log("Users table already exists.");
   }
 
   const hasThreadsTable = await knex.schema.hasTable("Threads");

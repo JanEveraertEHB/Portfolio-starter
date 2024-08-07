@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const path = require("path");
 const app = express();
+const dotenvPath = path.resolve(__dirname, "../../../.env");
 
-require("dotenv").config();
+require("dotenv").config({ path: dotenvPath });
 
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
@@ -25,9 +27,12 @@ app.get("/", async (req, res) => {
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM "Users"');
     client.release();
+
+    console.log("Fetched users:", result.rows);
+
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("Error during query:", err);
     res.send("Error " + err);
   }
 });
