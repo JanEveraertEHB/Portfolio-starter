@@ -1,0 +1,4 @@
+
+server/.env
+server/_backup
+server/images/api/node_modules

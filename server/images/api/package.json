@@ -1,0 +1,31 @@
+{
+  "name": "portfolio-starter-dmitrcambur",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test-watch": "jest --watchAll --detectOpenHandles",
+    "test": "jest --detectOpenHandles",
+    "start": "nodemon src/index.js",
+    "go": "npx knex migrate:latest --cwd ./src/db && npx knex seed:run --cwd ./src/db && nodemon src/index.js",
+    "dev": "npx knex migrate:latest --cwd ./src/db && npx knex seed:run --cwd ./src/db && npm run test-watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "knex": "^3.1.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
